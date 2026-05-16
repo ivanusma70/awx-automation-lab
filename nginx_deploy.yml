@@ -3,27 +3,30 @@
   hosts: all
   gather_facts: true
   tasks:
-    - name: Purge broken Nginx to start clean
-      ansible.builtin.package:
-        name: nginx
-        state: absent
-
-    - name: Install Nginx Web Server Cleanly
+    - name: Install Nginx Web Server
       ansible.builtin.package:
         name: nginx
         state: present
 
-    - name: Change Nginx default IPv4 port to 8085
-      ansible.builtin.replace:
-        path: /etc/nginx/sites-available/default
-        regexp: 'listen 80 default_server;'
-        replace: 'listen 8085 default_server;'
+    - name: Deploy clean default site configuration on port 8085
+      ansible.builtin.copy:
+        content: |
+          server {
+              listen 8085 default_server;
+              listen [::]:8085 default_server;
 
-    - name: Change Nginx default IPv6 port to 8085
-      ansible.builtin.replace:
-        path: /etc/nginx/sites-available/default
-        regexp: 'listen \[::\]:80 default_server;'
-        replace: 'listen [::]:8085 default_server;'  # <- Corregido: Aquí NO lleva barras invertidas
+              root /var/www/html;
+              index index.html index.htm index.nginx-debian.html;
+
+              server_name _;
+
+              location / {
+                  try_files $uri $uri/ =404;
+              }
+          }
+        dest: /etc/nginx/sites-available/default
+        mode: '0644'
+        force: true
 
     - name: Create a custom landing page
       ansible.builtin.copy:
