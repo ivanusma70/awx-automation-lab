@@ -1,0 +1,4 @@
+---
+- name: Trigger Mount All Filesystems
+  ansible.builtin.command:
+    cmd: mount -a
