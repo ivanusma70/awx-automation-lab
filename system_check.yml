@@ -3,15 +3,11 @@
   hosts: all
   gather_facts: true
   tasks:
-    - name: Show system uptime
-      ansible.builtin.command: uptime
-      register: uptime_output
-
-    - name: Print uptime result to AWX console
+    - name: Print system uptime using native Ansible Facts
       ansible.builtin.debug:
-        msg: "The server uptime details are: {{ uptime_output.stdout }}"
+        msg: "The server has been up for {{ ansible_uptime_seconds }} seconds."
 
     - name: Create a status file on the target machine
       ansible.builtin.copy:
-        content: "Automated by AWX inside Kind! Check timestamp: {{ ansible_date_time.iso8601 }}\n"
+        content: "Automated successfully by AWX inside Kind!\n"
         dest: /tmp/awx_status.txt
