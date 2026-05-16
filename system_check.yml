@@ -1,13 +1,28 @@
 ---
-- name: Infrastructure Health Check
+- name: Infrastructure Identity and Security Management
   hosts: all
-  gather_facts: true
+  gather_facts: false
   tasks:
-    - name: Print system uptime using native Ansible Facts
-      ansible.builtin.debug:
-        msg: "The server has been up for {{ ansible_uptime_seconds }} seconds."
+    - name: Ensure group 'sysadmin' exists
+      ansible.builtin.group:
+        name: sysadmin
+        state: present
 
-    - name: Create a status file on the target machine
-      ansible.builtin.copy:
-        content: "Automated successfully by AWX inside Kind!\n"
-        dest: /tmp/awx_status.txt
+    - name: Create DevOps Administrator user
+      ansible.builtin.user:
+        name: devopsadmin
+        comment: "Automation Managed Account"
+        group: sysadmin
+        groups: sudo   # Nota: Si tu VPS usa RHEL/Rocky, cambia 'sudo' por 'wheel'
+        append: true
+        shell: /bin/bash
+        state: present
+
+    - name: Verify user creation by checking passwd
+      ansible.builtin.command: getent passwd devopsadmin
+      register: user_check
+      changed_when: false
+
+    - name: Show user details in AWX console
+      ansible.builtin.debug:
+        var: user_check.stdout
