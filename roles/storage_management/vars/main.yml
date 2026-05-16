@@ -1,0 +1,4 @@
+---
+disk_source: "/dev/sdb1"  # En producción usarías el UUID (ej: "UUID=xxxx-xxxx")
+mount_point: "/mnt/backup_data"
+filesystem_type: "ext4"
