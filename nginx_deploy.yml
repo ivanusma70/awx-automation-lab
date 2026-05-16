@@ -3,25 +3,27 @@
   hosts: all
   gather_facts: true
   tasks:
-    - name: Install Nginx Web Server
+    - name: Purge broken Nginx to start clean
+      ansible.builtin.package:
+        name: nginx
+        state: absent
+
+    - name: Install Nginx Web Server Cleanly
       ansible.builtin.package:
         name: nginx
         state: present
 
-    - name: Change Nginx default port to 8085 to avoid conflicts with n8n
+    - name: Change Nginx default IPv4 port to 8085
       ansible.builtin.replace:
         path: /etc/nginx/sites-available/default
         regexp: 'listen 80 default_server;'
         replace: 'listen 8085 default_server;'
-      register: nginx_port_config
-      failed_when: false
 
-    - name: Ensure IPv6 also listens on 8085
+    - name: Change Nginx default IPv6 port to 8085
       ansible.builtin.replace:
         path: /etc/nginx/sites-available/default
         regexp: 'listen \[::\]:80 default_server;'
-        replace: 'listen \[::\]:8085 default_server;'
-      failed_when: false
+        replace: 'listen [::]:8085 default_server;'  # <- Corregido: Aquí NO lleva barras invertidas
 
     - name: Create a custom landing page
       ansible.builtin.copy:
@@ -37,7 +39,7 @@
           </head>
           <body>
               <h1>¡Hola Ivan! Servidor Nginx Dedicado</h1>
-              <p>Desplegado de forma segura en el puerto 8085.</p>
+              <p>Desplegado de forma segura en el puerto 8085 sin romper n8n.</p>
               <p>Última sincronización: {{ ansible_date_time.iso8601 }}</p>
           </body>
           </html>
