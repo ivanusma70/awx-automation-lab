@@ -12,6 +12,6 @@
     path: "{{ mount_point }}"
     src: "{{ disk_source }}"
     fstype: "{{ filesystem_type }}"
-    opts: "defaults,noatime"
-    state: present  # 'present' solo escribe el archivo /etc/fstab, NO lo monta de inmediato.
-  notify: Trigger Mount All Filesystems  # <- CLAVE: Si la línea en /etc/fstab ya existía exacta, no hace nada. Si cambió o es nueva, activa el handler para montar el disco.
+    opts: "bind,defaults,noatime"  # <- Agregamos 'bind' al inicio de las opciones
+    state: present
+  notify: Trigger Mount All Filesystems
