@@ -1,0 +1,6 @@
+---
+- name: Enterprise Infrastructure Deployment
+  hosts: all
+  gather_facts: false
+  roles:
+    - nginx_webserver
