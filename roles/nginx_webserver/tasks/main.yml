@@ -22,6 +22,7 @@
       }
     dest: /etc/nginx/sites-available/default
     mode: '0644'
+  notify: Restart Nginx Service  # <- Si este archivo cambia, avisa al handler
 
 - name: Create a custom landing page con UTF-8
   ansible.builtin.copy:
@@ -43,9 +44,10 @@
        </html>
     dest: /var/www/html/index.html
     mode: '0644'
+  notify: Restart Nginx Service  # <- Si la landing cambia, también avisa
 
 - name: Ensure Nginx is started and enabled on boot
   ansible.builtin.service:
     name: nginx
-    state: restarted
+    state: started  # <- Cambiado de 'restarted' a 'started' (Idempotente y seguro)
     enabled: true
