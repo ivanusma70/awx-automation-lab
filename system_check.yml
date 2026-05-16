@@ -1,0 +1,17 @@
+---
+- name: Infrastructure Health Check
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: Show system uptime
+      ansible.builtin.command: uptime
+      register: uptime_output
+
+    - name: Print uptime result to AWX console
+      ansible.builtin.debug:
+        msg: "The server uptime details are: {{ uptime_output.stdout }}"
+
+    - name: Create a status file on the target machine
+      ansible.builtin.copy:
+        content: "Automated by AWX inside Kind! Check timestamp: {{ ansible_date_time.iso8601 }}\n"
+        dest: /tmp/awx_status.txt
