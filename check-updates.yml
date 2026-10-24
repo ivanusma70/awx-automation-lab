@@ -1,0 +1,12 @@
+---
+- name: Check system updates
+  hosts: all
+  tasks:
+    - name: Verify available package updates
+      ansible.builtin.dnf:
+        list: updates
+      register: dnf_updates
+
+    - name: Display pending updates
+      ansible.builtin.debug:
+        var: dnf_updates.results
