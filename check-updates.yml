@@ -7,6 +7,9 @@
         list: updates
       register: dnf_updates
 
-    - name: Display pending updates
+    - name: Display pending updates summary
       ansible.builtin.debug:
-        var: dnf_updates.results
+        msg: >-
+          {% for pkg in dnf_updates.results %}
+          - {{ pkg.name }} ({{ pkg.version }}-{{ pkg.release }})
+          {% endfor %}
